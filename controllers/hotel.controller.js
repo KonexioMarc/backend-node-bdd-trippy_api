@@ -2,8 +2,9 @@ const express = require('express')
 const router = express.Router();
 const mongoose = require('mongoose')
 const HotelModel = require('../models/hotel.model')
+const passport = require('passport')
 
-router.get('/', async (req, res, next) => {
+router.get('/', passport.authorize('local'), async (req, res, next) => {
     // const hotels = await HotelModel.find({}).exec()
     // console.log('hotels', hotels)
 
@@ -21,7 +22,7 @@ router.get('/', async (req, res, next) => {
 })
 
 
-router.get('/:id', function(req, res, next) {
+router.get('/:id',  function(req, res, next) {
     const id = req.params.id
     console.log('id', id)
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -38,7 +39,7 @@ router.get('/:id', function(req, res, next) {
 })
 
 
-router.post('/', async function(req, res, next) {
+router.post('/', passport.authorize('local'), async function(req, res, next) {
     const body = req.body
     console.log('body', body)
     const newHotel = new HotelModel(body)
@@ -54,7 +55,7 @@ router.post('/', async function(req, res, next) {
 })
 
 
-router.put('/:id', function(req, res, next) {
+router.put('/:id', passport.authorize('local'), function(req, res, next) {
     const name = req.query.name
     const id = req.params.id
     console.log('name', name)
