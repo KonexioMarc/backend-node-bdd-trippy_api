@@ -5,10 +5,9 @@ const mongoose = require('mongoose')
 const HotelRouter = require('./controllers/hotel.controller')
 const RestaurantRouter = require('./controllers/restaurant.controller')
 const UserRouter = require('./controllers/user.controller')
-const bcrypt = require('bcrypt')
-const passport = require('passport')
+const passport = require('./config/passport')
 const session = require('express-session')
-const LocalStrategy = require('passport-local')
+
 const UserModel = require('./models/user.model')
 
 mongoose.connect('mongodb://localhost:27017/trippy_basics')
@@ -34,27 +33,6 @@ passport.deserializeUser(async (id, done) => {
     const user = await UserModel.findById(id).exec()
     done(null, user)
 })
-
-passport.use(new LocalStrategy(async (username, password, done) => {
-    try {
-        const user = await UserModel.findOne({
-            username
-        }).exec()
-        console.log('user', user)
-        if (!user) {
-            return done(null, false)
-        }
-        const isCorrect = await bcrypt.compare(password, user.password)
-        console.log('isCorrect', isCorrect)
-        if (!isCorrect) {
-            return done(null, false)
-        }
-        done(null, user)
-    } catch(err) {
-        console.error(err)
-        done(null, false)
-    }
-}))
 
 app.use(passport.initialize())
 app.use(passport.session());
